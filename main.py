@@ -2,40 +2,35 @@
 """
 @Project: Project
 @File: main.py
-@Date ：2023/9/4 16:16
-@Author：Amlei
+@Date ：2023/9/17 9:20
+@Author：YaPotato
 @version：python 3.11
 @IDE: PyCharm 2023.2
 """
+import pprint
 from time import sleep
-
 import requests
 import logging
 import random
 from data import URL
-from data import user
-from data import state
 from data import glo
 from log import log
-from log import check
+from Sql import execute
+from Sql import SQL
+from sendEmail import mail
 
 session = requests.session()
-
-random.seed(1.36)
-
 log()
 
 # 登录
-def Login():
+def Login(option):
     global session
-
+    # pprint.pprint(test.data['user'][option])
     try:
-        post = session.post(URL.loginURL, data=user.user)
-        if post.status_code == 403:
-            # 随即休眠5到11秒的浮点数
-            sleep(float("{:.2f}".format(random.uniform(5, 11))))
-            post = session.post(URL.loginURL, headers=URL.header, data=user.user)
-        status(post, glo.login)
+        # 随即休眠5到11秒的浮点数
+        sleep(float("{:.2f}".format(random.uniform(5, 11))))
+        post = session.post(URL.loginURL, headers=URL.header, data=execute().data['user'][option])
+        status(post, glo.login, option - 1)
 
         return post
     except requests.exceptions.SSLError:
@@ -43,10 +38,9 @@ def Login():
         print(f"{requests.exceptions.SSLError} SSL连接池异常，请关闭代理或使用Ubuntu后运行")
         exit()
 
-
 # 打卡
-def Sign():
-    global session
+def Sign(option):
+    # global session
     """
     if check() == False:
         print("今日已打卡! 程序退出")
@@ -59,8 +53,8 @@ def Sign():
     try:
         sleep(float("{:.2f}".format(random.uniform(2, 6))))
 
-        post = session.post(URL.signURL, headers=session.headers, data=state.datas)
-        status(post, glo.sign)
+        post = session.post(URL.signURL, headers=session.headers, data=execute().data['user'][option])
+        status(post, glo.sign, option-1)
 
         return post
     except requests.exceptions.SSLError:
@@ -69,7 +63,7 @@ def Sign():
         exit()
 
 # 状态
-def status(request, text):
+def status(request, text, email):
     global session
 
     # if (request.status_code == 200 or (text == glo.sign and request.json()['status'] == "success")):
@@ -79,7 +73,13 @@ def status(request, text):
     else:
         logging.info(f"{text}{glo.error}, 请检查!")
         print(f"{text}{glo.error}, 请检查")
+        try:
+            mail(text, SQL().select(table='user')[email][-1])
+        except:
+            pass
 
 if __name__ == '__main__':
-    Login()
-    Sign()
+    for i in range(1, SQL().count() + 1):
+        Login(i)
+        Sign(i)
+        sleep(random.uniform(10, 20))

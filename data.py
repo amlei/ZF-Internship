@@ -32,7 +32,7 @@ class URL():
     }
 
 """
-用户信息
+用户信息    已更改为MySQL数据库获取
 """
 class user():
     # ZFTAL_CSRF_TOKEN -> 数据需抓包获取
@@ -46,7 +46,7 @@ class user():
     id = ""
 
 """
-地点信息
+地点信息  已更改为MySQL数据库获取
 """
 class state():
     # 数据获取: https://api.map.baidu.com/lbsapi/getpoint/
@@ -65,7 +65,7 @@ class state():
         "kqddxx": location,
         "rwxm_id": user.id,  # 用户id: 每个账号都是唯一的，需抓包获取
         "kqlx": 0,   # 考勤类型: 0 -> 签到,1 -> 签退
-        "zkqfw": 0,  # 在考勤范围: 0 -> 否, 1 -> 是
+        "zkqfw": 1,  # 在考勤范围: 0 -> 否, 1 -> 是
     }
 
 if __name__ == '__main__':
