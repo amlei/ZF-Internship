@@ -135,7 +135,7 @@ if __name__ == '__main__':
     report = open("./report.txt", "r", encoding="utf-8").read().split("===")
 
     reportProperty = ['zrzlx', 'ywlyb', 'id1', 'sxwd', 'kcsxwd', 'zc_h_zj', 'yf_h_zj', 'sfbx', 'xh_id', 'zjId', 'ksrq', 'jsrq', 'sxxx', 'xzc', 'zc', 'autocomplete', 'rzqssj', 'rzjssj', 'zrznr', 'ewzrznr', 'file', 'fjxx', 'ywbjKey']
-    reSQL = reportSQL(2104230114)
+    reSQL = reportSQL(学号)
     # reSQL.insert(2023)
 
     a = reSQL.updateData(reportProperty)

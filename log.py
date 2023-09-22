@@ -72,7 +72,7 @@ if __name__ == '__main__':
     logging.warning('And this, too')
     logging.error('And non-ASCII stuff, too, like resund and Malmö')
 
-    # PATH = "/home/test/code/python/ZF-Internship/HTTP/"
+    # PATH = "./"
 
 
     print(" ")
