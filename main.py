@@ -24,7 +24,7 @@ from sendEmail import mail
 
 session = requests.session()
 
-# Log("/home/test/code/python/ZF-Internship/HTTP/").log()     # # Aliyun Server PATH
+# Log("./").log()     # PATH
 
 
 # 登录

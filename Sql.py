@@ -16,7 +16,6 @@ from glo import glo
 # from data import glo
 # from log import Log
 
-# Log("/home/test/code/python/ZF-Internship/HTTP/").log()     # # Aliyun Server PATH
 
 class SQL():
     def __init__(self):
