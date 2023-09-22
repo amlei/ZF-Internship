@@ -3,7 +3,7 @@
 @Project: Project
 @File: main.py
 @Date ：2023/9/17 9:20
-@Author：YaPotato
+@Author：Amlei
 @version：python 3.11
 @IDE: PyCharm 2023.2
 """
@@ -13,19 +13,25 @@ import requests
 import logging
 import random
 from data import URL
-from data import glo
-from log import log
-from Sql import execute
-from Sql import SQL
+# from data import glo
+from glo import glo
+from glo import isWeekend
+from log import Log
+from sql import execute
+from sql import SQL
+from data import reportExecute
 from sendEmail import mail
 
 session = requests.session()
-log()
+
+# Log("/home/test/code/python/ZF-Internship/HTTP/").log()     # # Aliyun Server PATH
+
 
 # 登录
 def Login(option):
     global session
-    # pprint.pprint(test.data['user'][option])
+
+    # pprint.pprint(execute().data['user'][option])
     try:
         # 随即休眠5到11秒的浮点数
         sleep(float("{:.2f}".format(random.uniform(5, 11))))
@@ -49,11 +55,12 @@ def Sign(option):
         post = session.post(URL.signURL, data=state.datas)
         status(post, glo.sign)
     """
+    # pprint.pprint(execute().data['state'][option])
 
     try:
         sleep(float("{:.2f}".format(random.uniform(2, 6))))
 
-        post = session.post(URL.signURL, headers=session.headers, data=execute().data['user'][option])
+        post = session.post(URL.signURL, headers=session.headers, data=execute().data['state'][option])
         status(post, glo.sign, option-1)
 
         return post
@@ -61,6 +68,15 @@ def Sign(option):
         logging.error("SSL连接池异常")
         print("SSL连接池异常，请关闭代理或使用Ubuntu后运行")
         exit()
+
+# 周报
+def report(user: int):
+    """
+    开发阶段
+    """
+    data = reportExecute(user).data
+
+    # print(data)
 
 # 状态
 def status(request, text, email):
@@ -79,7 +95,10 @@ def status(request, text, email):
             pass
 
 if __name__ == '__main__':
-    for i in range(1, SQL().count() + 1):
+    # print(SQL().count('user'))
+    for i in range(1, SQL().count(table='user') + 1):
         Login(i)
         Sign(i)
-        sleep(random.uniform(10, 20))
+        if (isWeekend(glo.Today) == True):
+            report(123)
+        # sleep(random.uniform(10, 20))
