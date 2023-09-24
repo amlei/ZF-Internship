@@ -11,7 +11,6 @@ import pprint
 from datetime import date
 from sql import SQL
 from sql import reportSQL
-# import sql
 
 """
 网址
@@ -28,24 +27,16 @@ class URL:
         "Accept": ""
     }
 
-
-def userExecute():
-    """
-    option: 1 -> user
-            2 -> state
-            3 -> report
-    """
+def userExecute(user: int):
     db = SQL()
+    db.user(user)
     stateProperty = ['mbjd', 'mbwd', 'yxwc', 'kqjd', 'kqwd', 'kqddxx', 'rwxm_id', 'kqlx', 'zkqfw']
     userProperty = ['ZFTAL_CSRF_TOKEN', 'yhm', 'mm']
 
     db.updateData('user', userProperty)
     db.updateData('state', stateProperty)
 
-    del stateProperty, userProperty
-
     db.close()
-
     return db
 
 def reportExecute(user: int):
@@ -55,14 +46,15 @@ def reportExecute(user: int):
                       'jsrq', 'sxxx', 'xzc', 'zc', 'autocomplete', 'rzqssj', 'rzjssj', 'zrznr', 'ewzrznr', 'file',
                       'fjxx', 'ywbjKey']
 
-    reSQL = reportSQL(user)
+    reSQL = reportSQL()
+    reSQL.user(user)
     reSQL.updateData(reportProperty)
 
-    # reSQL.insert(2023, report)
+    # reSQL.insert(2023, report, 15, 4)
     reSQL.close()
 
     return reSQL
 
 if __name__ == '__main__':
-    # print(reportExecute(学号).data)
-    pprint.pprint(userExecute().data)
+    a = reportExecute(学号)
+    pprint.pprint(a)

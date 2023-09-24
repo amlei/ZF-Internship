@@ -20,12 +20,12 @@ class glo:
     error = "失败"
     Today = date.today()
 
-
 # 如果是周末打卡则在考勤范围
 def isWeekend(Today):
     ret = 0
+
     # 仅支持星期六数据
-    if Today == 6:
+    if Today.isoweekday() == 6:
         ret = 1
 
     return ret

@@ -11,11 +11,10 @@ import logging
 import smtplib
 from email.mime.text import MIMEText
 from email.utils import formataddr
-# from data import glo
 from glo import glo
 from log import Log
 
-sender = ''  # 填写发信人的邮箱账号
+sender = '@qq.com'  # 填写发信人的邮箱账号
 password = ''  # 发件人邮箱授权码
 
 def mail(text,receive):
@@ -35,4 +34,4 @@ def mail(text,receive):
         print("邮件发送失败")
 
 if __name__ == '__main__':
-    mail("")    # 收件邮箱
+    mail("@qq.com")  # 收件邮箱

@@ -13,92 +13,88 @@ import requests
 import logging
 import random
 from data import URL
-# from data import glo
 from glo import glo
 from glo import isWeekend
 from log import Log
-from sql import execute
 from sql import SQL
 from data import reportExecute
+from data import userExecute
 from sendEmail import mail
 
-session = requests.session()
+Log("./").log()     # PATH
 
-# Log("./").log()     # PATH
+class app():
+    def __init__(self, user, email):
+        self.session = requests.session()
+        self.user = user
+        self.email = email
 
+    # 登录打卡
+    def launch(self, table: str):
+        url = None
+        gloD = None
+        data = None
+        if table == 'user':     # 登录
+            url = URL.loginURL
+            gloD = glo.login
+            data = 'user'
+        elif table == 'state':     # 打卡
+            url = URL.signURL
+            gloD = glo.sign
+            data = 'state'
+        else:
+            exit()
 
-# 登录
-def Login(option):
-    global session
-
-    # pprint.pprint(execute().data['user'][option])
-    try:
-        # 随即休眠5到11秒的浮点数
-        sleep(float("{:.2f}".format(random.uniform(5, 11))))
-        post = session.post(URL.loginURL, headers=URL.header, data=execute().data['user'][option])
-        status(post, glo.login, option - 1)
-
-        return post
-    except requests.exceptions.SSLError:
-        logging.error(f"{requests.exceptions.SSLError} SSL连接池异常")
-        print(f"{requests.exceptions.SSLError} SSL连接池异常，请关闭代理或使用Ubuntu后运行")
-        exit()
-
-# 打卡
-def Sign(option):
-    # global session
-    """
-    if check() == False:
-        print("今日已打卡! 程序退出")
-        exit()
-    else:
-        post = session.post(URL.signURL, data=state.datas)
-        status(post, glo.sign)
-    """
-    # pprint.pprint(execute().data['state'][option])
-
-    try:
-        sleep(float("{:.2f}".format(random.uniform(2, 6))))
-
-        post = session.post(URL.signURL, headers=session.headers, data=execute().data['state'][option])
-        status(post, glo.sign, option-1)
-
-        return post
-    except requests.exceptions.SSLError:
-        logging.error("SSL连接池异常")
-        print("SSL连接池异常，请关闭代理或使用Ubuntu后运行")
-        exit()
-
-# 周报
-def report(user: int):
-    """
-    开发阶段
-    """
-    data = reportExecute(user).data
-
-    # print(data)
-
-# 状态
-def status(request, text, email):
-    global session
-
-    # if (request.status_code == 200 or (text == glo.sign and request.json()['status'] == "success")):
-    if (request.status_code == 200):
-        logging.info(f"{request.status_code} {text}{glo.success}")
-        print(f"{request.status_code } {text}{glo.success}")
-    else:
-        logging.info(f"{text}{glo.error}, 请检查!")
-        print(f"{text}{glo.error}, 请检查")
         try:
-            mail(text, SQL().select(table='user')[email][-1])
-        except:
-            pass
+            # 随即休眠3到60秒的浮点数
+            sleep(float("{:.2f}".format(random.uniform(30, 60))))
+            post = self.session.post(url, headers=URL.header, data=userExecute(self.user).data[data])
+
+            self.status(post, gloD)
+
+            return post
+        except requests.exceptions.SSLError:
+            logging.error(f"{requests.exceptions.SSLError} SSL连接池异常")
+            print(f"{requests.exceptions.SSLError} SSL连接池异常，请关闭代理或使用Ubuntu后运行")
+            exit()
+
+    # 周报
+    def report(self):
+        """
+        开发阶段
+        """
+        # 随即休眠六至十分钟
+        sleep(float("{:.2f}".format(random.uniform(360, 600))))
+        post = self.session.post(URL.reportURL, headers=self.session.headers, data=reportExecute(self.user).data)
+
+        self.status(post, "周报")
+
+    # 状态
+    def status(self, request, text: str):
+        # if (request.status_code == 200 or (text == glo.sign and request.json()['status'] == "success")):
+        if (request.status_code == 200):
+            logging.info(f"{request.status_code} {text}{glo.success}")
+            print(f"{request.status_code} {text}{glo.success}")
+        else:
+            logging.info(f"{text}{glo.error}, 请检查!")
+            print(f"{text}{glo.error}, 请检查")
+            try:
+                mail(text, self.email)
+            except:
+                pass
 
 if __name__ == '__main__':
     # print(SQL().count('user'))
-    for i in range(1, SQL().count(table='user') + 1):
-        Login(i)
-        Sign(i)
+    user = SQL().allUser()
+
+    for i in range(0, len(user)):
+        yhm = user[i][0]
+        email = user[i][1]
+        # 登录
+        app(yhm, email).launch('user')
+        # 打卡
+        app(yhm, email).launch('state')
+        # 若当前为星期六，则上传周报 ----> 周报数据已存在MySQL数据库中
         if (isWeekend(glo.Today) == True):
-            report(123)
-        # sleep(random.uniform(10, 20))
+            app(yhm, email).report()
+
