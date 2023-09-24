@@ -31,7 +31,7 @@ create table report(
     zc_h_zj int not null default 12 comment '周次',
     yf_h_zj varchar(1) default null,
     sfbx int default 0,
-    yhm int(10) not null default 2104230114 comment '用户名/学号',
+    yhm int(10) not null comment '用户名/学号',
     zjld varchar(57) not null default 'FEFEA3511E0E2A53E0533E02CD0A5C05/0414522/企业课堂培养/null/null',
     ksrq date not null default '2023-09-01' comment '实习开始日期',
     jsrq date not null default '2024-05-31'comment '实习结束日期',
