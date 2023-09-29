@@ -3,19 +3,20 @@
 @Project: Project
 @File: sql.py
 @Date ：2023/9/16 21:09
-@Author：Amlei
+@Author：YaPotato
 @version：python 3.11
 @IDE: PyCharm 2023.2
 """
 import logging
 import pprint
 import re
+
 import pymysql
 import datetime
 from glo import glo
 from log import Log
 
-Log("./").log()
+# Log("./").log()     # PATH
 
 class SQL():
     def __init__(self):
@@ -101,6 +102,7 @@ class reportSQL(SQL):
                     self.db.commit()
                 except:
                     print("插入周报出错")
+                    exit()
                 zc_h_zj += 1
                 zc += 1
                 reportLen -= 1
@@ -126,19 +128,23 @@ class reportSQL(SQL):
                 data = datas[0][j + 1]
                 if (data == None):
                     data = ""
+                if (isinstance(data, datetime.date) == True):
+                    data = str(data)
+
                 self.data[property[j]] = data
         except IndexError:
-            print("数据为空！")
+            print("本周周报数据为空,无法完成本周周报上传!")
+            logging.error("本周周报数据为空,无法完成本周周报上传!")
+            exit()
 
         return self.data
 
 if __name__ == '__main__':
-    # pprint.pprint(execute().data)
-    # report = open("./report.txt", "r", encoding="utf-8").read().split("===")
-
-    # reportProperty = ['zrzlx', 'ywlyb', 'id1', 'sxwd', 'kcsxwd', 'zc_h_zj', 'yf_h_zj', 'sfbx', 'xh_id', 'zjId', 'ksrq', 'jsrq', 'sxxx', 'xzc', 'zc', 'autocomplete', 'rzqssj', 'rzjssj', 'zrznr', 'ewzrznr', 'file', 'fjxx', 'ywbjKey']
-    # reSQL = reportSQL()
-    # reSQL.user(学号)
-    a = SQL()
+    a = reportSQL()
     a.user(学号)
-    print(a.select('user'))
+    # print(a.select(glo.Today))
+    reportProperty = ['zrzlx', 'ywlyb', 'id1', 'sxwd', 'kcsxwd', 'zc_h_zj', 'yf_h_zj', 'sfbx', 'xh_id', 'zjId', 'ksrq',
+                      'jsrq', 'sxxx', 'xzc', 'zc', 'autocomplete', 'rzqssj', 'rzjssj', 'zrznr', 'ewzrznr', 'file',
+                      'fjxx', 'ywbjKey']
+    c = a.updateData(reportProperty)
+    pprint.pp(c)

@@ -14,12 +14,13 @@ import logging
 import random
 from data import URL
 from glo import glo
-from glo import isWeekend
+from glo import today_is_weekend
 from log import Log
 from sql import SQL
 from data import reportExecute
+from glo import today_is_holiday
 from data import userExecute
-from sendEmail import mail
+from sendEmail import sendEmail
 
 Log("./").log()     # PATH
 
@@ -42,6 +43,7 @@ class app():
             url = URL.signURL
             gloD = glo.sign
             data = 'state'
+            URL.header = self.session.headers
         else:
             exit()
 
@@ -87,6 +89,13 @@ if __name__ == '__main__':
     # print(SQL().count('user'))
     user = SQL().allUser()
 
+    # 如果今日为假期则直接退出不执行打卡
+    if (today_is_holiday() == True):
+        # 发完邮箱再退出
+        for i in range(0, len(user)):
+            sendEmail(user[i][1]).email("假期")
+        exit()
+
     for i in range(0, len(user)):
         yhm = user[i][0]
         email = user[i][1]
@@ -95,6 +104,5 @@ if __name__ == '__main__':
         # 打卡
         app(yhm, email).launch('state')
         # 若当前为星期六，则上传周报 ----> 周报数据已存在MySQL数据库中
-        if (isWeekend(glo.Today) == True):
+        if (today_is_weekend(glo.Today) == True):
             app(yhm, email).report()
-

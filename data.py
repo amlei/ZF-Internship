@@ -8,7 +8,6 @@
 @IDE: PyCharm 2023.2
 """
 import pprint
-from datetime import date
 from sql import SQL
 from sql import reportSQL
 
