@@ -3,7 +3,7 @@
 @Project: Project
 @File: sql.py
 @Date ：2023/9/16 21:09
-@Author：YaPotato
+@Author：Amlei
 @version：python 3.11
 @IDE: PyCharm 2023.2
 """
