@@ -17,8 +17,8 @@ from chinese_calendar import is_holiday
 
 class sendEmail():
     def __init__(self, receive):
-        self.sender = ''  # 填写发信人的邮箱账号
-        self.password = ''  # 发件人邮箱授权码
+        self.sender = 'lixiang.altr@qq.com'  # 填写发信人的邮箱账号
+        self.password = 'tkinqwkyiixsdaef'  # 发件人邮箱授权码
         self.receive = receive
 
     def email(self, text):
@@ -28,13 +28,13 @@ class sendEmail():
                 send_text = f'日期: {glo.Today}为假期，停止实习打卡!'
 
             msg = MIMEText(send_text, 'plain', )  # 填写邮件内容
-            msg['From'] = formataddr(["正方实习打卡", self.sender])  # 括号里的对应发件人邮箱昵称、发件人邮箱账号
-            msg['To'] = formataddr(["正方实习打卡", self.receive])  # 括号里的对应收件人邮箱昵称、收件人邮箱账号
-            msg['Subject'] = send_text  # 邮件的主题，也可以说是标题
+            msg['From'] = formataddr(("正方实习打卡", self.sender))  # 发件人邮箱昵称、账号
+            msg['To'] = formataddr(("正方实习打卡", self.receive))  # 收件人邮箱昵称、账号
+            msg['Subject'] = send_text  # 邮件标题
 
-            server = smtplib.SMTP_SSL("smtp.qq.com", 465)  # 发件人邮箱中的SMTP服务器
-            server.login(self.sender, self.password)  # 括号中对应的是发件人邮箱账号、邮箱授权码
-            server.sendmail(self.sender, self.receive, msg.as_string())  # 括号中对应的是发件人邮箱账号、收件人邮箱账号、发送邮件
+            server = smtplib.SMTP_SSL("smtp.qq.com", 465)  # 发件SMTP服务器
+            server.login(self.sender, self.password)  # 发件人邮箱账号、授权码
+            server.sendmail(self.sender, self.receive, msg.as_string())  # 发件人邮箱账号、收件人邮箱账号、邮件信息
             server.quit()  # 关闭连接
             print("邮件已发送")
             logging.info("邮件已发送")
