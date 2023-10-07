@@ -17,8 +17,8 @@ from chinese_calendar import is_holiday
 
 class sendEmail():
     def __init__(self, receive):
-        self.sender = 'lixiang.altr@qq.com'  # 填写发信人的邮箱账号
-        self.password = 'tkinqwkyiixsdaef'  # 发件人邮箱授权码
+        self.sender = ''  # 填写发信人的邮箱账号
+        self.password = ''  # 发件人邮箱授权码
         self.receive = receive
 
     def email(self, text):
