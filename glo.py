@@ -4,7 +4,7 @@
 @File: glo.py
 @Date ：2023/9/22 14:04
 @Author：Amlei
-@version：python 3.11
+@version：python 3.12
 @IDE: PyCharm 2023.2
 """
 import datetime
@@ -18,13 +18,15 @@ from chinese_calendar import is_holiday
 class glo:
     login = "登录"
     sign = "打卡"
+    report = "周报"
     success = "成功"
     error = "失败"
+    festival = "假期"
     Today = date.today()
 
 # 如果是周末打卡则在考勤范围
-def today_is_weekend():
-    ret = 0
+def today_is_weekend() -> int:
+    ret: int = 0
 
     # 仅支持星期六数据
     if glo.Today.isoweekday() == 6:
@@ -32,16 +34,13 @@ def today_is_weekend():
 
     return ret
 
-def today_is_holiday():
-    ret = False
+def date_is_holiday(date: datetime) -> bool:
+    ret: bool = False
 
     try:
-        assert is_holiday(glo.Today) is False
-
+        assert is_holiday(date) is False
     except AssertionError:
         ret = True
-        print("今日是假期，停止打卡")
-        logging.error("今日是假期，停止打卡")
 
     return ret
 

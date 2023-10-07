@@ -4,7 +4,7 @@
 @File: log.py
 @Date ：2023/9/4 16:23
 @Author：Amlei
-@version：python 3.11
+@version：python 3.12
 @IDE: PyCharm 2023.2
 """
 from glo import glo

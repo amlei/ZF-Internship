@@ -4,7 +4,7 @@
 @File: sendEmail.py
 @Date ：2023/9/9 17:37
 @Author：Amlei
-@version：python 3.11
+@version：python 3.12
 @IDE: PyCharm 2023.2
 """
 import datetime
@@ -24,8 +24,11 @@ class sendEmail():
     def email(self, text):
         send_text = f'{glo.Today}实习{text}{glo.error}'
         try:
-            if text == "假期":
-                send_text = f'日期: {glo.Today}为假期，停止实习打卡!'
+            match text:
+                case "假期":
+                    send_text = f'日期: {glo.Today}为{text}，停止实习打卡!'
+                case "周报":
+                    send_text = f'{glo.Today}{text}上传{glo.error}, 请检查本周{text}数据是否存在!'
 
             msg = MIMEText(send_text, 'plain', )  # 填写邮件内容
             msg['From'] = formataddr(("正方实习打卡", self.sender))  # 发件人邮箱昵称、账号
@@ -42,7 +45,6 @@ class sendEmail():
         except Exception as e:  # 如果 try 中的语句没有执行，则会执行下面的 ret=False
             print(f"邮件发送失败:{e}")
             logging.error(f"邮件发送失败:{e}")
-
 
 if __name__ == '__main__':
     day = datetime.date(2023, 9, 27)

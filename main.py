@@ -4,7 +4,7 @@
 @File: main.py
 @Date ：2023/9/17 9:20
 @Author：Amlei
-@version：python 3.11
+@version：python 3.12
 @IDE: PyCharm 2023.2
 """
 import pprint
@@ -31,14 +31,14 @@ class app():
         self.user = None
         self.email = None
 
-    def update_data(self, username: int, mail: str):
+    def update_data(self, username: int, mail: str) -> None:
         self.user = username
         self.email = mail
 
     # 登录打卡
     def launch(self, table: str):
         url = None
-        status = None  # 当前执行状态
+        status = None   # 当前执行状态
         data = None
         if table == 'user':  # 登录
             url = URL.loginURL
@@ -53,7 +53,8 @@ class app():
 
         try:
             # 随即休眠30到60秒的浮点数
-            sleep(float("{:.2f}".format(random.uniform(30, 45))))
+            # sleep(float("{:.2f}".format(random.uniform(30, 45))))
+            sleep(float("{:.2f}".format(random.uniform(5, 10))))
             post = self.session.post(url, headers=self.header, data=userExecute(self.user).data[data])
 
             # 将原有的header覆盖，防止无法成功执行后续操作
@@ -68,41 +69,42 @@ class app():
 
     # 周报
     def report(self):
-        """
-        开发阶段
-        """
         # 随即休眠六至十分钟
-        dormancy = float("{:.2f}".format(random.uniform(360, 600)))
+        # dormancy = float("{:.2f}".format(random.uniform(360, 600)))
+        dormancy = float("{:.2f}".format(random.uniform(10, 15)))
         print(f"休眠{dormancy}秒")
         sleep(dormancy)
+        # 上传周报数据
+        if reportExecute(self.user).data is None:
+            pass
+        else:
+            post = self.session.post(URL.reportURL, headers=self.header, data=reportExecute(self.user).data)
+            self.status(post, glo.report)
 
-        post = self.session.post(URL.reportURL, headers=self.header, data=reportExecute(self.user).data)
-
-        logging.info(post.status_code)
-        logging.info(post.text)
-
-        print(post.status_code)
-        print("响应信息：", post.text)
-        self.status(post, "周报")
-
-        return post
+            return post
 
     # 状态
-    def status(self, request, text: str):
-        # if (request.status_code == 200 or (text == glo.sign and request.json()['status'] == "success")):
+    def status(self, request, text: str) -> None:
         if request.status_code == 200:
             logging.info(f"{request.status_code} {text}{glo.success}")
             print(f"{request.status_code} {text}{glo.success}")
-            # 每个账户完成打卡后，重刷新header
-            if text == glo.sign:
+
+            # 如果当前打卡执行完毕, 且今日为星期六则上传周报
+            # 再重刷新header, 以供下一个用户能够正常执行打卡
+            if text == glo.sign and today_is_weekend():
+                self.report()
                 self.refresh_header()
+
         # 应以网站打卡操作为优先，而非先判断是否为假期
         elif request.status_code != 200 and date_is_holiday(glo.Today) is True:
             print("今日是假期，停止打卡")
             logging.info("今日是假期，停止打卡")
             # 发送邮箱
+            user = SQL().allUser()
             for j in range(0, len(user)):
                 sendEmail(user[j][1]).email("假期")
+            # sendEmail(self.user).email("假期")
+
             # 执行完退出
             exit()
         else:
@@ -112,10 +114,10 @@ class app():
             # 执行完退出
             exit()
 
-    def refresh_header(self):
+    def refresh_header(self) -> None:
         self.header = URL.header
 
-if __name__ == '__main__':
+def main() -> None:
     user = SQL().allUser()
     appLaunch = app()
 
@@ -130,7 +132,5 @@ if __name__ == '__main__':
         # 打卡
         appLaunch.launch('state')
 
-        # 若当前为星期六，则上传周报 ----> 周报数据已存在MySQL数据库中
-        # if (today_is_weekend() == False):
-        #     app(yhm, email).report()
-        #     pprint.pprint(reportExecute(yhm).data)
+if __name__ == '__main__':
+    main()
