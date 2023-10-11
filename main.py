@@ -7,6 +7,7 @@
 @version：python 3.12
 @IDE: PyCharm 2023.2
 """
+import datetime
 import pprint
 from time import sleep
 import requests
@@ -18,7 +19,7 @@ from glo import today_is_weekend
 from log import Log
 from sql import SQL
 from data import reportExecute
-from glo import today_is_holiday
+from glo import date_is_holiday
 from data import userExecute
 from sendEmail import sendEmail
 
@@ -53,8 +54,8 @@ class app():
 
         try:
             # 随即休眠30到60秒的浮点数
-            # sleep(float("{:.2f}".format(random.uniform(30, 45))))
-            sleep(float("{:.2f}".format(random.uniform(5, 10))))
+            sleep(float("{:.2f}".format(random.uniform(60, 120))))
+            # sleep(float("{:.2f}".format(random.uniform(5, 10))))
             post = self.session.post(url, headers=self.header, data=userExecute(self.user).data[data])
 
             # 将原有的header覆盖，防止无法成功执行后续操作
@@ -69,13 +70,14 @@ class app():
 
     # 周报
     def report(self):
-        # 随即休眠六至十分钟
-        # dormancy = float("{:.2f}".format(random.uniform(360, 600)))
-        dormancy = float("{:.2f}".format(random.uniform(10, 15)))
+        # 随即休眠1至2分钟
+        dormancy = float("{:.2f}".format(random.uniform(60, 120)))
+        # dormancy = float("{:.2f}".format(random.uniform(10, 15)))
         print(f"休眠{dormancy}秒")
         sleep(dormancy)
         # 上传周报数据
-        if reportExecute(self.user).data is None:
+        if len(reportExecute(self.user).data) == glo.null:
+            # 数据为空 跳过
             pass
         else:
             post = self.session.post(URL.reportURL, headers=self.header, data=reportExecute(self.user).data)
@@ -86,30 +88,34 @@ class app():
     # 状态
     def status(self, request, text: str) -> None:
         if request.status_code == 200:
-            logging.info(f"{request.status_code} {text}{glo.success}")
-            print(f"{request.status_code} {text}{glo.success}")
+            logging.info(f"{self.user} {request.status_code} {text}{glo.success}")
+            print(f"{self.user} {request.status_code} {text}{glo.success}")
 
             # 如果当前打卡执行完毕, 且今日为星期六则上传周报
             # 再重刷新header, 以供下一个用户能够正常执行打卡
             if text == glo.sign and today_is_weekend():
                 self.report()
                 self.refresh_header()
+                # self.refresh_session()
+            # 每次打卡成功后都开启一个新session
+            if text == glo.sign and today_is_weekend() is False:
+                self.refresh_header()
+                # self.refresh_session()
 
         # 应以网站打卡操作为优先，而非先判断是否为假期
         elif request.status_code != 200 and date_is_holiday(glo.Today) is True:
             print("今日是假期，停止打卡")
             logging.info("今日是假期，停止打卡")
             # 发送邮箱
-            user = SQL().allUser()
-            for j in range(0, len(user)):
-                sendEmail(user[j][1]).email("假期")
-            # sendEmail(self.user).email("假期")
+            user = userData()
+            while user:
+                sendEmail(user.pop()[1]).email(glo.festival)
 
             # 执行完退出
             exit()
         else:
-            logging.info(f"{text}{glo.error}, 请检查!")
-            print(f"{text}{glo.error}, 请检查")
+            logging.info(f"{self.user} {text}{glo.error}, 请检查!")
+            print(f"{self.user} {text}{glo.error}, 请检查")
             sendEmail(self.email).email(text)
             # 执行完退出
             exit()
@@ -117,18 +123,34 @@ class app():
     def refresh_header(self) -> None:
         self.header = URL.header
 
+    def refresh_session(self) -> None:
+        print("开启新Session")
+        self.session.close()
+        self.session = requests.session()
+
+
+# 提供检索
+def userData() -> list:
+    return list(SQL().allUser())
+
+
 def main() -> None:
-    user = SQL().allUser()
+    user = userData()
     appLaunch = app()
 
-    for i in range(0, len(user)):
-        yhm = user[i][0]
-        email = user[i][1]
+    # 获取用户名、密码，开始执行
+    while user:
+        pop_user = user.pop(0)
+        yhm = pop_user[0]
+        email = pop_user[1]
+        print(yhm, email)
+
         # 加载用户名、密码
         appLaunch.update_data(yhm, email)
-
+        #
         # 登录
         appLaunch.launch('user')
+
         # 打卡
         appLaunch.launch('state')
 

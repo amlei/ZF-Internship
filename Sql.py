@@ -3,7 +3,7 @@
 @Project: Project
 @File: sql.py
 @Date ：2023/9/16 21:09
-@Author：Amlei
+@Author：YaPotato
 @version：python 3.12
 @IDE: PyCharm 2023.2
 """
@@ -14,44 +14,52 @@ import re
 import pymysql
 import datetime
 from glo import glo
+from state import geocode
 from log import Log
 
-# Log("./").log()     # PATH
+# Log("/home/test/code/python/ZF-Internship/HTTP/").log()     # # Aliyun Server PATH
+# Log("/home/ya/code/python/ZF-Internship/HTTP/").log()     # # Ubuntu Server PATH
+
 class SQL():
     def __init__(self):
         self.db = pymysql.connect(host='localhost', user='root', password='123456', database='zf_internship')
         self.cursor = self.db.cursor()
         self.data = {'user': {}, 'state': {}}
+        self.user = None
 
     # 插入打卡数据
     def insert(self, table: str = None, **kwargs):
         """
         table: 仅提供state、user表
-        **kwargs -> token: str = None, password: str = None, mail: str = None,
+        **kwargs -> password: str = None, mail: str = None,
                     longitude: float = None, latitude: float = None, location: str = None
-
-        user表所需: token, password, mail
-        state表所需: user, mbjd, mbwd, kqjd, kqwd, kqddxx
-
+                    
+        user表所需: user, password, mail
+        state表所需: user, longitude, latitude
+        
         例如：
-        SQL.insert(table='user', token='参数必须为32位', password=123, mail=1234)
+        SQL.insert(table='user', password=123, mail=1234)
         SQL.insert(table='state', user=123, mbjd=110.01, mbwd=110.01, kqjd=110.01, kqwd=110.01, kqddxx='北京西四环')
+
+        a.user(**)
+        a.insert(table='user', password=**, mail="**@qq.com")
+        a.insert(table='state', longitude=state_data['longitude'], latitude=state_data['latitude'], address=state_data['address'])
         """
         try:
             match table:
                 case 'state':
                     self.cursor.execute(
-                        f"insert into state(user, mbjd, mbwd, kqjd, kqwd,kqddxx) "
-                        f"values ({self.user},{'{:.2f}'.format(kwargs['longitude'] - 0.75)},"
+                        f"insert into state(yhm, mbjd, mbwd, kqjd, kqwd,kqddxx) "
+                        f"values ('{self.user}',{'{:.2f}'.format(kwargs['longitude'] - 0.75)},"
                         f"{'{:.2f}'.format(kwargs['latitude'] + 0.65)},"
-                        f"'{kwargs['longitude']}','{kwargs['latitude']}','{kwargs['location']}')")
+                        f"'{kwargs['longitude']}','{kwargs['latitude']}','{kwargs['address']}')")
                 case 'user':
                     self.cursor.execute(
-                        f"insert into user(ZFTAL_CSRF_TOKEN, yhm, mm, mail) values ('{kwargs['token']}','{self.user}',"
+                        f"insert into user(yhm, mm, mail) values ('{self.user}',"
                         f"'{kwargs['password']}','{kwargs['mail']}')")
-        except:
-            logging.warning("插入表错误")
-            print("插入表错误")
+        except Exception as e:
+            logging.warning(f"插入表错误{e}")
+            print(f"插入表错误{e}")
             pass
 
         self.db.commit()
@@ -69,8 +77,8 @@ class SQL():
         defSlice = None
         match table:
             case "user":
-                # ['ZFTAL_CSRF_TOKEN', 'yhm', 'mm']
-                defSlice = slice(3)
+                # ['yhm', 'mm']
+                defSlice = slice(2)
             case "state":
                 # ['mbjd', 'mbwd', 'yxwc', 'kqjd', 'kqwd', 'kqddxx', 'rwxm_id', 'kqlx', 'zkqfw']
                 defSlice = slice(9)
@@ -98,10 +106,8 @@ class SQL():
         return self.cursor.fetchall()
 
     # 设置用户名
-    def user(self, user) -> int:
+    def update_user(self, user) -> None:
         self.user = user
-
-        return self.user
 
     # 关闭数据库连接
     def close(self) -> None:
@@ -112,7 +118,6 @@ class SQL():
         self.cursor.execute(f"show columns from {table}")
 
         return list(self.cursor.fetchall()[1:])
-
 
 # 继承父类
 class reportSQL(SQL):
@@ -153,8 +158,14 @@ class reportSQL(SQL):
 
     def select(self, today: datetime.date) -> list:
         self.cursor.execute(f"select * from report where yhm = {self.user} and rzjssj='{today}'")
+        data: list = list()
 
-        return list(self.cursor.fetchall()[0][1:])
+        try:
+            data = list(self.cursor.fetchall()[0][1:])
+        except IndexError:
+            pass
+
+        return data
 
     def updateData(self) -> dict:
         self.data = {}
@@ -196,22 +207,26 @@ class reportSQL(SQL):
         return list(self.cursor.fetchall()[0])
 
 if __name__ == '__main__':
-    a = reportSQL()
-    a.user(学号)
-    zc = a.in_current_week()
+    # a = reportSQL()
+    # a.user(2104230114)
+    # zc = a.in_current_week()
     # 最新周次 + 1
-    a.insert(2023, zc.pop(0) + 1, zc.pop(0) + 1)
+    # a.insert(2023, zc.pop(0) + 1, zc.pop(0) + 1)
     # print(a.select(glo.Today))
-    # reportProperty = ['zrzlx', 'ywlyb', 'id1', 'sxwd', 'kcsxwd', 'zc_h_zj', 'yf_h_zj', 'sfbx', 'xh_id', 'zjId', 'ksrq',
-    #                   'jsrq', 'sxxx', 'xzc', 'zc', 'autocomplete', 'rzqssj', 'rzjssj', 'zrznr', 'ewzrznr', 'file',
-    #                   'fjxx', 'ywbjKey']
     # c = a.updateData(reportProperty)
     # c = a.updateData()
+    # c = a.select("2023-10-14")
+    # print(c)
     # pprint.pp(c)
 
-    # a = SQL()
-    # a.user(学号)
-    # a.insert(table='user', token='', password=123, mail=1234)
+    a = SQL()
+    a.update_user(2104230161)
 
-    # a.updateData('user')
-    # pprint.pprint(c)
+    # print(a.user)
+    state_data = geocode()
+    # a.insert(table='user', password=266735, mail="2535471951@qq.com")
+    a.insert(table='state', longitude=state_data['longitude'], latitude=state_data['latitude'], address=state_data['address'])
+
+    # c = a.updateData('user')
+    # print(a.select('user'))
+    # pprint.pprint(a.data)
