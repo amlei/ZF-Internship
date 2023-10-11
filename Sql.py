@@ -17,9 +17,6 @@ from glo import glo
 from state import geocode
 from log import Log
 
-# Log("/home/test/code/python/ZF-Internship/HTTP/").log()     # # Aliyun Server PATH
-# Log("/home/ya/code/python/ZF-Internship/HTTP/").log()     # # Ubuntu Server PATH
-
 class SQL():
     def __init__(self):
         self.db = pymysql.connect(host='localhost', user='root', password='123456', database='zf_internship')
@@ -208,7 +205,7 @@ class reportSQL(SQL):
 
 if __name__ == '__main__':
     # a = reportSQL()
-    # a.user(2104230114)
+    # a.user(学号)
     # zc = a.in_current_week()
     # 最新周次 + 1
     # a.insert(2023, zc.pop(0) + 1, zc.pop(0) + 1)
@@ -220,11 +217,9 @@ if __name__ == '__main__':
     # pprint.pp(c)
 
     a = SQL()
-    a.update_user(2104230161)
-
     # print(a.user)
     state_data = geocode()
-    # a.insert(table='user', password=266735, mail="2535471951@qq.com")
+
     a.insert(table='state', longitude=state_data['longitude'], latitude=state_data['latitude'], address=state_data['address'])
 
     # c = a.updateData('user')
