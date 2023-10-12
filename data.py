@@ -28,7 +28,7 @@ class URL:
 # 执行用户数据操作
 def userExecute(user: int):
     db = SQL()
-    db.user(user)
+    db.update_user(user)
     # 更新用户数据
     db.updateData('user')
     # 更新打卡数据

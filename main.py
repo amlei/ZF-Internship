@@ -39,7 +39,7 @@ class app():
     # 登录打卡
     def launch(self, table: str):
         url = None
-        status = None   # 当前执行状态
+        status = None  # 当前执行状态
         data = None
         if table == 'user':  # 登录
             url = URL.loginURL
@@ -54,8 +54,8 @@ class app():
 
         try:
             # 随即休眠30到60秒的浮点数
-            sleep(float("{:.2f}".format(random.uniform(60, 120))))
-            # sleep(float("{:.2f}".format(random.uniform(5, 10))))
+            # sleep(float("{:.2f}".format(random.uniform(60, 120))))
+            sleep(float("{:.2f}".format(random.uniform(10, 20))))
             post = self.session.post(url, headers=self.header, data=userExecute(self.user).data[data])
 
             # 将原有的header覆盖，防止无法成功执行后续操作
@@ -64,8 +64,7 @@ class app():
 
             return post
         except requests.exceptions.SSLError:
-            logging.error(f"{requests.exceptions.SSLError} SSL连接池异常")
-            print(f"{requests.exceptions.SSLError} SSL连接池异常，请关闭代理或使用Ubuntu后运行")
+            log_error(f"{requests.exceptions.SSLError} SSL连接池异常，请关闭代理或使用Linux后运行")
             exit()
 
     # 周报
@@ -87,20 +86,25 @@ class app():
 
     # 状态
     def status(self, request, text: str) -> None:
-        if request.status_code == 200:
-            logging.info(f"{self.user} {request.status_code} {text}{glo.success}")
-            print(f"{self.user} {request.status_code} {text}{glo.success}")
 
-            # 如果当前打卡执行完毕, 且今日为星期六则上传周报
-            # 再重刷新header, 以供下一个用户能够正常执行打卡
-            if text == glo.sign and today_is_weekend():
-                self.report()
-                self.refresh_header()
-                # self.refresh_session()
-            # 每次打卡成功后都开启一个新session
-            if text == glo.sign and today_is_weekend() is False:
-                self.refresh_header()
-                # self.refresh_session()
+        if request.status_code == 200:
+            if text == glo.login and BeautifulSoup(request.text, 'html.parser').find('div',
+                                                                                     class_='username hidden-xs'):
+                log_info(f"{self.user} {request.status_code} {text}{glo.success}")
+
+            elif text == glo.sign and json.loads(request.text)['status'] == 'success':
+                log_info(f"{self.user} {request.status_code} {text}{glo.success}")
+
+                match today_is_weekend():
+                    # 如果当前打卡执行完毕, 且今日为星期六则上传周报
+                    # 再重刷新header, 以供下一个用户能够正常执行打卡
+                    case True:
+                        self.report()
+                        # self.refresh_header()
+                        self.refresh_session()
+                    case False:
+                        # self.refresh_header()
+                        self.refresh_session()
 
         # 应以网站打卡操作为优先，而非先判断是否为假期
         elif request.status_code != 200 and date_is_holiday(glo.Today) is True:
@@ -110,12 +114,10 @@ class app():
             user = userData()
             while user:
                 sendEmail(user.pop()[1]).email(glo.festival)
-
             # 执行完退出
             exit()
         else:
-            logging.info(f"{self.user} {text}{glo.error}, 请检查!")
-            print(f"{self.user} {text}{glo.error}, 请检查")
+            log_info(f"{self.user} {text}{glo.error}, 请检查!")
             sendEmail(self.email).email(text)
             # 执行完退出
             exit()
@@ -138,6 +140,15 @@ def main() -> None:
     user = userData()
     appLaunch = app()
 
+    # pop_user = user.pop(0)
+    #
+    # appLaunch.update_data(pop_user[0], pop_user[1])
+    # #
+    # appLaunch.launch('user')
+    #
+    # # 打卡
+    # appLaunch.launch('state')
+
     # 获取用户名、密码，开始执行
     while user:
         pop_user = user.pop(0)
@@ -153,6 +164,7 @@ def main() -> None:
 
         # 打卡
         appLaunch.launch('state')
+
 
 if __name__ == '__main__':
     main()

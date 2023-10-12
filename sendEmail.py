@@ -39,12 +39,11 @@ class sendEmail():
             server.login(self.sender, self.password)  # 发件人邮箱账号、授权码
             server.sendmail(self.sender, self.receive, msg.as_string())  # 发件人邮箱账号、收件人邮箱账号、邮件信息
             server.quit()  # 关闭连接
-            print("邮件已发送")
-            logging.info("邮件已发送")
 
-        except Exception as e:  # 如果 try 中的语句没有执行，则会执行下面的 ret=False
-            print(f"邮件发送失败:{e}")
-            logging.error(f"邮件发送失败:{e}")
+            log_info(f"邮件已发送至{self.receive}")
+
+        except Exception as error:  # 如果 try 中的语句没有执行，则会执行下面的 ret=False
+            log_error(f"邮件发送失败:{error}")
 
 if __name__ == '__main__':
     day = datetime.date(2023, 9, 27)

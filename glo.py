@@ -44,6 +44,21 @@ def date_is_holiday(date: datetime) -> bool:
 
     return ret
 
+
+def log_info(context: str) -> None:
+    logging.info(context)
+    print(context)
+
+
+def log_error(context: str) -> None:
+    logging.error(context)
+    print(context)
+
+
+def log_waring(context: str) -> None:
+    logging.warning(context)
+    print(context)
+
 if __name__ == '__main__':
     # print(today_is_weekend())
 
