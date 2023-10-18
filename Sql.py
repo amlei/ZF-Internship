@@ -14,10 +14,13 @@ import re
 import pymysql
 import datetime
 from glo import glo
+from glo import log_waring
+from glo import log_error
+from sendEmail import sendEmail
 from state import geocode
-from log import Log
 
-class SQL():
+
+class SQL:
     def __init__(self):
         self.db = pymysql.connect(host='localhost', user='root', password='123456', database='zf_internship')
         self.cursor = self.db.cursor()
@@ -25,15 +28,15 @@ class SQL():
         self.user = None
 
     # 插入打卡数据
-    def insert(self, table: str = None, **kwargs):
+    def insert(self, table: str = None, **kwargs) -> pymysql:
         """
         table: 仅提供state、user表
         **kwargs -> password: str = None, mail: str = None,
                     longitude: float = None, latitude: float = None, location: str = None
-                    
+
         user表所需: user, password, mail
         state表所需: user, longitude, latitude
-        
+
         例如：
         SQL.insert(table='user', password=123, mail=1234)
         SQL.insert(table='state', user=123, mbjd=110.01, mbwd=110.01, kqjd=110.01, kqwd=110.01, kqddxx='北京西四环')
@@ -55,22 +58,26 @@ class SQL():
                         f"insert into user(yhm, mm, mail) values ('{self.user}',"
                         f"'{kwargs['password']}','{kwargs['mail']}')")
         except Exception as e:
-            if pymysql.err.IntegrityError:
-                # 更新数据
-                match table:
-                    case 'state':
-                        self.cursor.execute(
-                            f"update state set mbjd={'{:.2f}'.format(kwargs['longitude'] - 0.75)}, "
-                            f"mbwd={'{:.2f}'.format(kwargs['latitude'] + 0.65)},"
-                            f"kqjd='{kwargs['longitude']}',"
-                            f"kqwd='{kwargs['latitude']}',"
-                            f"kqddxx='{kwargs['address']}' where yhm={self.user}")
-            else:
-                log_waring(f"插入表错误{e}")
+            log_waring(f"插入表错误{e}")
 
-                pass
+            pass
 
         self.db.commit()
+        return self.cursor
+
+    # 更新数据
+    def update(self, table: str = None, **kwargs) -> pymysql:
+        match table:
+            case 'state':
+                self.cursor.execute(
+                    f"update state set mbjd={'{:.2f}'.format(kwargs['longitude'] - 0.75)}, "
+                    f"mbwd={'{:.2f}'.format(kwargs['latitude'] + 0.65)},"
+                    f"kqjd='{kwargs['longitude']}',"
+                    f"kqwd='{kwargs['latitude']}',"
+                    f"kqddxx='{kwargs['address']}' where yhm={self.user}")
+
+        self.db.commit()
+
         return self.cursor
 
     # 查询表数据
@@ -102,7 +109,7 @@ class SQL():
         return self.data
 
     # 统计表数据条目
-    def count(self, table):
+    def count(self, table) -> list:
         self.cursor.execute(f"select count(*) from {table}")
 
         return self.cursor.fetchall()[0][0]
@@ -127,12 +134,13 @@ class SQL():
 
         return list(self.cursor.fetchall()[1:])
 
+
 # 继承父类
 class reportSQL(SQL):
     def __init__(self):
         super().__init__()
 
-    def insert(self, year: int, zc_h_zj: int, zc: int) -> int:
+    def insert(self) -> int:
         """
         year:       周报年份
         reports:    周报内容
@@ -208,6 +216,7 @@ class reportSQL(SQL):
         except IndexError:
             log_error("本周周报数据为空,无法完成本周周报上传!")
             sendEmail(self.user).email("本周周报数据为空,无法完成本周周报上传!")
+
             # 不退出，以供跳过本账号
             pass
 
@@ -217,10 +226,11 @@ class reportSQL(SQL):
 
         return list(self.cursor.fetchall()[0])
 
+
 if __name__ == '__main__':
     """
-       a.insert(table='user', password=, mail="@qq.com")
-       a.insert(table='state', longitude=state_data['longitude'], latitude=state_data['latitude'], address=state_data['address'])
+    a.insert(table='user', password=, mail="@qq.com")
+    a.insert(table='state', longitude=state_data['longitude'], latitude=state_data['latitude'], address=state_data['address'])
     """
     # 插入周报
     # a = reportSQL()
@@ -231,6 +241,5 @@ if __name__ == '__main__':
     location = geocode()
     a = SQL()
     a.update_user(学号)
-    a.insert(table="state", longitude=location['longitude'], latitude=location['latitude'], address=location['address'])
-
+    a.update(table="state", longitude=location['longitude'], latitude=location['latitude'], address=location['address'])
 
