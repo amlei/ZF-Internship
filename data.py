@@ -44,17 +44,15 @@ def reportExecute(user: int, option: bool = False):
     """
     # 加载数据库
     reSQL = reportSQL()
-
+    reSQL.update_user(user)
     match option:
         # 插入周报
         case True:
-            # 拿出当前最新周报数据周次值
-            zc = reSQL.in_current_week()
             # 最新周次 + 1
-            reSQL.insert(2023, zc.pop(0) + 1, zc.pop(0) + 1)
+            reSQL.insert()
         # 从数据库传入周报数据
         case False:
-            reSQL.user(user)
+            reSQL.update_user(user)
             reSQL.updateData()
     reSQL.close()
 

@@ -55,9 +55,20 @@ class SQL():
                         f"insert into user(yhm, mm, mail) values ('{self.user}',"
                         f"'{kwargs['password']}','{kwargs['mail']}')")
         except Exception as e:
-            logging.warning(f"插入表错误{e}")
-            print(f"插入表错误{e}")
-            pass
+            if pymysql.err.IntegrityError:
+                # 更新数据
+                match table:
+                    case 'state':
+                        self.cursor.execute(
+                            f"update state set mbjd={'{:.2f}'.format(kwargs['longitude'] - 0.75)}, "
+                            f"mbwd={'{:.2f}'.format(kwargs['latitude'] + 0.65)},"
+                            f"kqjd='{kwargs['longitude']}',"
+                            f"kqwd='{kwargs['latitude']}',"
+                            f"kqddxx='{kwargs['address']}' where yhm={self.user}")
+            else:
+                log_waring(f"插入表错误{e}")
+
+                pass
 
         self.db.commit()
         return self.cursor
@@ -128,28 +139,31 @@ class reportSQL(SQL):
         zc_h_zj:    系统默认递增周次，为账号已打卡到的系统周次
         zc:         当前插入周报时的账号打卡周次
         """
-        date = datetime.date.today()
+        data = self.in_current_week()
+        date = data.pop() + datetime.timedelta(days=7)
+        year = date.year
+        zc_h_zj = data.pop(0) + 1
+        zc = data.pop(0) + 1
+
         report = open("./report.txt", "r", encoding="utf-8").read().split("===")
         # 周记条数
         count: int = 0
 
         # 循环直到年份不再是指定年份
         while date.year == year:
-            # 如果是星期六
-            while date.weekday() == 5 and report:
+            # # 如果是星期六
+            if report:
                 try:
                     self.cursor.execute(
-                        f"insert into report(zc_h_zj, yhm, xzc, zc, rzqssj, rzjssj, zrznr)"
-                        f"values({zc_h_zj},{self.user},{zc_h_zj},{zc},"
-                        f"'{'{}-{:02}-{:02}'.format(date.year, date.month, date.day - 5)}',"
-                        f"'{date.strftime('%Y-%m-%d')}','{report.pop(0)}');")
+                        f"insert into report(zc_h_zj, yhm, xzc, zc, rzqssj, rzjssj, zrznr) values({zc_h_zj},{self.user},{zc_h_zj},{zc}, '{'{}-{:02}-{:02}'.format(date.year, date.month, date.day - 5)}', '{date.strftime('%Y-%m-%d')}','{report.pop(0)}');")
                     self.db.commit()
                 except:
                     print("插入周报出错, 程序不再执行")
                     exit()
                 zc_h_zj += 1
                 zc += 1
-            date += datetime.timedelta(days=1)  # 递增日期
+
+            date += datetime.timedelta(days=7)  # 递增日期
 
         return count
 
@@ -192,36 +206,31 @@ class reportSQL(SQL):
 
             return self.data
         except IndexError:
-            print("本周周报数据为空,无法完成本周周报上传!")
-            logging.error("本周周报数据为空,无法完成本周周报上传!")
+            log_error("本周周报数据为空,无法完成本周周报上传!")
+            sendEmail(self.user).email("本周周报数据为空,无法完成本周周报上传!")
             # 不退出，以供跳过本账号
             pass
 
     # 当前周报最新数据
     def in_current_week(self) -> list:
-        self.cursor.execute(f"select MAX(xzc), MAX(zc) from report where yhm = {self.user}")
+        self.cursor.execute(f"select MAX(xzc), MAX(zc), MAX(rzjssj) from report where yhm = {self.user}")
 
         return list(self.cursor.fetchall()[0])
 
 if __name__ == '__main__':
+    """
+       a.insert(table='user', password=, mail="@qq.com")
+       a.insert(table='state', longitude=state_data['longitude'], latitude=state_data['latitude'], address=state_data['address'])
+    """
+    # 插入周报
     # a = reportSQL()
-    # a.user(学号)
-    # zc = a.in_current_week()
-    # 最新周次 + 1
-    # a.insert(2023, zc.pop(0) + 1, zc.pop(0) + 1)
-    # print(a.select(glo.Today))
-    # c = a.updateData(reportProperty)
-    # c = a.updateData()
-    # c = a.select("2023-10-14")
-    # print(c)
-    # pprint.pp(c)
+    # a.update_user(学号)
+    # a.insert()
 
+    # 地理位置
+    location = geocode()
     a = SQL()
-    # print(a.user)
-    state_data = geocode()
+    a.update_user(学号)
+    a.insert(table="state", longitude=location['longitude'], latitude=location['latitude'], address=location['address'])
 
-    a.insert(table='state', longitude=state_data['longitude'], latitude=state_data['latitude'], address=state_data['address'])
 
-    # c = a.updateData('user')
-    # print(a.select('user'))
-    # pprint.pprint(a.data)

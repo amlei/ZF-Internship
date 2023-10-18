@@ -100,11 +100,12 @@ class app():
                     # 再重刷新header, 以供下一个用户能够正常执行打卡
                     case True:
                         self.report()
-                        # self.refresh_header()
-                        self.refresh_session()
+                        self.refresh_header()
+
                     case False:
-                        # self.refresh_header()
-                        self.refresh_session()
+                        self.refresh_header()
+            elif text == glo.report and json.loads(request.text)['status'] == 'success':
+                log_info(f"{self.user} {request.status_code} {text}{glo.success}")
 
         # 应以网站打卡操作为优先，而非先判断是否为假期
         elif request.status_code != 200 and date_is_holiday(glo.Today) is True:
@@ -139,15 +140,6 @@ def userData() -> list:
 def main() -> None:
     user = userData()
     appLaunch = app()
-
-    # pop_user = user.pop(0)
-    #
-    # appLaunch.update_data(pop_user[0], pop_user[1])
-    # #
-    # appLaunch.launch('user')
-    #
-    # # 打卡
-    # appLaunch.launch('state')
 
     # 获取用户名、密码，开始执行
     while user:
