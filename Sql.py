@@ -28,7 +28,7 @@ class SQL:
         self.user = None
 
     # 插入打卡数据
-    def insert(self, table: str = None, **kwargs) -> pymysql:
+    def insert(self, table: str, **kwargs) -> pymysql:
         """
         table: 仅提供state、user表
         **kwargs -> password: str = None, mail: str = None,
@@ -227,19 +227,35 @@ class reportSQL(SQL):
         return list(self.cursor.fetchall()[0])
 
 
+def main():
+    """
+    按键提示：
+        [1] -> 插入用户
+        [2] -> 插入地点
+        [3] -> 更新数据
+    """
+    sql: pymysql = SQL()
+    user: int = int(input("请输入用户名："))
+
+    sql.update_user(user)
+
+    option: int = int(input(main.__doc__))
+    match option:
+        case glo.insert_user:
+            data = str(input("输入密码邮箱(空格分割):")).split(" ")
+            sql.insert(table="user", password=data.pop(0), mail=data.pop(0))
+        case glo.insert_state:
+            location = geocode()
+            sql.insert(table="state", longitude=location['longitude'], latitude=location['latitude'],
+                       address=location['address'])
+        case glo.update_data:
+            # 更新数据
+            pass
+
+
 if __name__ == '__main__':
     """
     a.insert(table='user', password=, mail="@qq.com")
     a.insert(table='state', longitude=state_data['longitude'], latitude=state_data['latitude'], address=state_data['address'])
     """
-    # 插入周报
-    # a = reportSQL()
-    # a.update_user(学号)
-    # a.insert()
-
-    # 地理位置
-    location = geocode()
-    a = SQL()
-    a.update_user(学号)
-    a.update(table="state", longitude=location['longitude'], latitude=location['latitude'], address=location['address'])
-
+    main()

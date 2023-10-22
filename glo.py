@@ -23,14 +23,18 @@ class glo:
     error = "失败"
     festival = "假期"
     Today = date.today()
+    null = 0
+    insert_user = 1
+    insert_state = 2
+    update_data = 3
 
 # 如果是周末打卡则在考勤范围
-def today_is_weekend() -> int:
-    ret: int = 0
+def today_is_weekend() -> bool:
+    ret: bool = False
 
     # 仅支持星期六数据
     if glo.Today.isoweekday() == 6:
-        ret = 1
+        ret = True
 
     return ret
 

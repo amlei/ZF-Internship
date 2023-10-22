@@ -37,7 +37,7 @@ class app():
         self.email = mail
 
     # 登录打卡
-    def launch(self, table: str):
+    def launch(self, table: str) -> requests:
         url = None
         status = None  # 当前执行状态
         data = None
@@ -68,7 +68,7 @@ class app():
             exit()
 
     # 周报
-    def report(self):
+    def report(self) -> requests:
         # 随即休眠1至2分钟
         dormancy = float("{:.2f}".format(random.uniform(60, 120)))
         # dormancy = float("{:.2f}".format(random.uniform(10, 15)))
@@ -100,12 +100,11 @@ class app():
                     # 再重刷新header, 以供下一个用户能够正常执行打卡
                     case True:
                         self.report()
-                        self.refresh_header()
-
                     case False:
                         self.refresh_header()
             elif text == glo.report and json.loads(request.text)['status'] == 'success':
                 log_info(f"{self.user} {request.status_code} {text}{glo.success}")
+                self.refresh_header()
 
         # 应以网站打卡操作为优先，而非先判断是否为假期
         elif request.status_code != 200 and date_is_holiday(glo.Today) is True:
@@ -128,7 +127,7 @@ class app():
 
     def refresh_session(self) -> None:
         print("开启新Session")
-        self.session.close()
+        # self.session.close()
         self.session = requests.session()
 
 
