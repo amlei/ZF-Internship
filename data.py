@@ -3,11 +3,13 @@
 @Project: Project
 @File: data.py
 @Date ：2023/9/4 16:05
-@Author：Amlei
+@Author：Amlei (lixiang.altr@qq.com)
 @version：python 3.12
 @IDE: PyCharm 2023.2
 """
+import json
 import pprint
+from datetime import date
 from sql import SQL
 from sql import reportSQL
 
@@ -15,16 +17,18 @@ from sql import reportSQL
 网址
 """
 class URL:
-    loginURL = ""    # 登录地址
-    signURL = ""        # 打卡地址
-    reportURL = ""    # 周报上传地址
+    loginURL = ""  # 登录地址
+    signURL = ""  # 打卡地址
+    singStatusURL = ""  # 打卡信息地址
+    reportURL = ""  # 周报上传地址
 
     # 自行查看本机的头文件
     header = {
-        "User-Agent": "",
-        "Cookie": "",
-        "Accept": ""
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.0.0",
+        "Cookie": "JSESSIONID=598A5B294147291E7E361D1D1D99B2EB",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
     }
+
 # 执行用户数据操作
 def userExecute(user: int):
     db = SQL()
@@ -36,6 +40,7 @@ def userExecute(user: int):
 
     db.close()
     return db
+
 # 执行周报数据操作
 def reportExecute(user: int, option: bool = False):
     """
@@ -59,5 +64,10 @@ def reportExecute(user: int, option: bool = False):
     return reSQL
 
 if __name__ == '__main__':
-    a = reportExecute(学号)
-    pprint.pprint(a)
+    a = reportExecute(学号, True)
+    # report = open("./report.txt", "r", encoding="utf-8").read().split("===")
+    # print(len(report.pop(0)))
+
+
+
+

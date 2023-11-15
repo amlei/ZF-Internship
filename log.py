@@ -3,7 +3,7 @@
 @Project: Project
 @File: log.py
 @Date ：2023/9/4 16:23
-@Author：Amlei
+@Author：Amlei (lixiang.altr@qq.com)
 @version：python 3.12
 @IDE: PyCharm 2023.2
 """
@@ -29,15 +29,17 @@ class Log:
     def log(self):
         self.isExistsDir("log")
 
-        logging.basicConfig(filename=f'{self.path}log/{glo.Today}.log', format='%(levelname)s :%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG)
+        # logging.basicConfig(filename=f'./log/{glo.today.strftime("%Y-%m-%d")}.log', format='%(levelname)s :%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG)
+
+        # Aliyun Server
+        logging.basicConfig(filename=f'{self.path}log/{glo.today}.log', format='%(levelname)s :%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG)
 
 if __name__ == '__main__':
-    PATH = "./"
-    Log(PATH).log()
-    logging.basicConfig(filename=f'./log/{glo.Today.strftime("%Y-%m-%d")}.log', format="%(levelname)s :%(asctime)s %(message)s", encoding='utf-8', level=logging.DEBUG)
-    logging.debug('This message should go to the log file')
-    logging.info('So should this')
-    logging.warning('And this, too')
-    logging.error('And non-ASCII stuff, too, like resund and Malmö')
+    # PATH = "./"
+    # Log(PATH).log()
+        # logging.debug('This message should go to the log file')
+    # logging.info('So should this')
+    # logging.warning('And this, too')
+    # logging.error('And non-ASCII stuff, too, like resund and Malmö')
 
     print(" ")

@@ -3,7 +3,7 @@
 @Project: Project
 @File: sql.py
 @Date ：2023/9/16 21:09
-@Author：YaPotato
+@Author：Amlei (lixiang.altr@qq.com)
 @version：python 3.12
 @IDE: PyCharm 2023.2
 """
@@ -19,7 +19,6 @@ from glo import log_error
 from sendEmail import sendEmail
 from state import geocode
 
-
 class SQL:
     def __init__(self):
         self.db = pymysql.connect(host='localhost', user='root', password='123456', database='zf_internship')
@@ -33,10 +32,10 @@ class SQL:
         table: 仅提供state、user表
         **kwargs -> password: str = None, mail: str = None,
                     longitude: float = None, latitude: float = None, location: str = None
-
+                    
         user表所需: user, password, mail
         state表所需: user, longitude, latitude
-
+        
         例如：
         SQL.insert(table='user', password=123, mail=1234)
         SQL.insert(table='state', user=123, mbjd=110.01, mbwd=110.01, kqjd=110.01, kqwd=110.01, kqddxx='北京西四环')
@@ -48,11 +47,11 @@ class SQL:
         try:
             match table:
                 case 'state':
-                    self.cursor.execute(
-                        f"insert into state(yhm, mbjd, mbwd, kqjd, kqwd,kqddxx) "
-                        f"values ('{self.user}',{'{:.2f}'.format(kwargs['longitude'] - 0.75)},"
-                        f"{'{:.2f}'.format(kwargs['latitude'] + 0.65)},"
-                        f"'{kwargs['longitude']}','{kwargs['latitude']}','{kwargs['address']}')")
+                        self.cursor.execute(
+                            f"insert into state(yhm, mbjd, mbwd, kqjd, kqwd,kqddxx) "
+                            f"values ('{self.user}',{'{:.2f}'.format(kwargs['longitude'] - 0.75)},"
+                            f"{'{:.2f}'.format(kwargs['latitude'] + 0.65)},"
+                            f"'{kwargs['longitude']}','{kwargs['latitude']}','{kwargs['address']}')")
                 case 'user':
                     self.cursor.execute(
                         f"insert into user(yhm, mm, mail) values ('{self.user}',"
@@ -134,7 +133,6 @@ class SQL:
 
         return list(self.cursor.fetchall()[1:])
 
-
 # 继承父类
 class reportSQL(SQL):
     def __init__(self):
@@ -188,7 +186,7 @@ class reportSQL(SQL):
 
     def updateData(self) -> dict:
         self.data = {}
-        datas = self.select(glo.Today)
+        datas = self.select(glo.today)
         propertys = self.show_property("report")
         """
         ['zrzlx', 'ywlyb', 'id1', 'sxwd', 'kcsxwd', 'zc_h_zj', 'yf_h_zj', 'sfbx', 'xh_id', 'zjId', 'ksrq',
@@ -215,7 +213,6 @@ class reportSQL(SQL):
             return self.data
         except IndexError:
             log_error("本周周报数据为空,无法完成本周周报上传!")
-            sendEmail(self.user).email("本周周报数据为空,无法完成本周周报上传!")
 
             # 不退出，以供跳过本账号
             pass
@@ -225,7 +222,6 @@ class reportSQL(SQL):
         self.cursor.execute(f"select MAX(xzc), MAX(zc), MAX(rzjssj) from report where yhm = {self.user}")
 
         return list(self.cursor.fetchall()[0])
-
 
 def main():
     """
@@ -246,16 +242,28 @@ def main():
             sql.insert(table="user", password=data.pop(0), mail=data.pop(0))
         case glo.insert_state:
             location = geocode()
-            sql.insert(table="state", longitude=location['longitude'], latitude=location['latitude'],
-                       address=location['address'])
+            sql.insert(table="state", longitude=location['longitude'], latitude=location['latitude'], address=location['address'])
         case glo.update_data:
             # 更新数据
             pass
-
 
 if __name__ == '__main__':
     """
     a.insert(table='user', password=, mail="@qq.com")
     a.insert(table='state', longitude=state_data['longitude'], latitude=state_data['latitude'], address=state_data['address'])
     """
+    # 插入周报
+    # a = reportSQL()
+    # a.update_user()
+    # a.insert()
     main()
+
+    # a = SQL()
+    # a.update_user()
+    # # a.insert('user', password="", mail="")
+    # 地理位置
+    # location = geocode()
+    # # a.insert(table="state", longitude=location['longitude'], latitude=location['latitude'], address=location['address'])
+    #
+    # a.update(table="state", longitude=location['longitude'], latitude=location['latitude'], address=location['address'])
+

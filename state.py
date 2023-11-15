@@ -3,13 +3,13 @@
 @Project: log.py
 @File: state.py
 @Date ：2023/10/11 20:37
-@Author：Amlei
+@Author：Amlei (lixiang.altr@qq.com)
 @version：python 3.12
 @IDE: PyCharm 2023.2
 """
 import json
+import pprint
 from typing import Any
-
 import requests
 
 # 地理编码
@@ -20,7 +20,7 @@ def geocode() -> dict[str, float | Any]:
     # address = map(str, input("请输入打卡地址:").split(" "))
     address: str = input("请输入打卡地址:")
     # 参数参考: https://lbs.amap.com/api/webservice/guide/api/georegeo/
-    geo_url = f"https://restapi.amap.com/v3/geocode/geo?parameters&key=**&address={address}"
+    geo_url = f"https://restapi.amap.com/v3/geocode/geo?parameters&key={}&address={address}"
     if address != "":
         data = requests.get(geo_url)
         # 打卡经纬度
@@ -34,4 +34,5 @@ def geocode() -> dict[str, float | Any]:
         print("输入地址空!")
 
 if __name__ == '__main__':
-    geocode()
+    a = geocode()
+    pprint.pprint(a)
