@@ -248,7 +248,9 @@ def main():
 
 if __name__ == '__main__':
     """
+    # 插入用户信息
     a.insert(table='user', password=, mail="@qq.com")
+    # 插入打卡地址
     a.insert(table='state', longitude=state_data['longitude'], latitude=state_data['latitude'], address=state_data['address'])
     """
     # 插入周报

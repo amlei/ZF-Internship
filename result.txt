@@ -1,0 +1,15 @@
+├─main.py 主函数
+├─README.md
+├─report.txt 周报数据
+├─zf_internship.sql 数据库文件
+├─log 日志文件
+|  └2023-9-5.log
+├─function 功能函数
+|    ├─data.py
+|    ├─glo.py
+|    ├─log.py
+|    ├─sendEmail.py
+|    ├─sql.py
+|    ├─state.py
+|    ├─__init__.py
+├─file README照片
