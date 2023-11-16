@@ -105,8 +105,6 @@ session [success=1 default=ignore] pam_succeed_if.so service in cron quiet use_u
 
 [Requests: HTTP for Humans™ — Requests 2.31.0 documentation](https://requests.readthedocs.io/)
 
-[拾取坐标系统](https://api.map.baidu.com/lbsapi/getpoint/)
-
-[坐标信息](https://restapi.amap.com/v3/geocode/regeo?key=81fc7500f0108a49ae6981032684771b&s=rsv3&language=zh_cn&location=116.40,39.91&jscode=3085e982657730ecef95e2ccaed9b93c&extensions=base&callback=jsonp_885644_&platform=JS&logversion=2.0&appname=https%3A%2F%2Fjw.gdcvi.edu.cn%2Fdgsx%2Fsxkq%2Fsxrckq%2FcxSxrckqWap.zf&csid=5408D4FC-728D-4261-A6B9-ACBBDBC89B23&sdkversion=1.4.22)
+[拾取坐标系统](https://lbs.amap.com/)
 
 [datetime — Basic date and time types](https://docs.python.org/3/library/datetime.html)
