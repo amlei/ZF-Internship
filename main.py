@@ -10,21 +10,21 @@
 import json
 import requests
 import logging
-from data import URL
-from glo import glo
-from glo import self_sleep
-from glo import today_is_weekend
-from log import Log
-from sql import SQL
-from data import reportExecute
-from glo import date_is_holiday
-from glo import log_info
-from glo import log_error
-from data import userExecute
-from sendEmail import sendEmail
+from function.data import URL
+from function.glo import glo
+from function.glo import self_sleep
+from function.glo import today_is_weekend
+from function.log import Log
+from function.sql import SQL
+from function.data import reportExecute
+from function.glo import date_is_holiday
+from function.glo import log_info
+from function.glo import log_error
+from function.data import userExecute
+from function.sendEmail import sendEmail
 from bs4 import BeautifulSoup
 
-# Log("./").log()   # Path
+Log("./").log()   # Path
 
 class app():
     def __init__(self):

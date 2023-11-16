@@ -7,7 +7,7 @@
 @version：python 3.12
 @IDE: PyCharm 2023.2
 """
-from glo import glo
+from function.glo import glo
 import os
 import logging
 
@@ -29,8 +29,6 @@ class Log:
     def log(self):
         self.isExistsDir("log")
 
-        # logging.basicConfig(filename=f'./log/{glo.today.strftime("%Y-%m-%d")}.log', format='%(levelname)s :%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG)
-
         # Aliyun Server
         logging.basicConfig(filename=f'{self.path}log/{glo.today}.log', format='%(levelname)s :%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG)
 
@@ -43,3 +41,4 @@ if __name__ == '__main__':
     # logging.error('And non-ASCII stuff, too, like resund and Malmö')
 
     print(" ")
+

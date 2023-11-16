@@ -7,15 +7,10 @@
 @version：python 3.12
 @IDE: PyCharm 2023.2
 """
-import json
-import pprint
-from datetime import date
-from sql import SQL
-from sql import reportSQL
+from function.sql import reportSQL
+from function.sql import SQL
 
-"""
-网址
-"""
+""" 网址、用户数据 """
 class URL:
     loginURL = ""  # 登录地址
     signURL = ""  # 打卡地址
@@ -69,7 +64,3 @@ if __name__ == '__main__':
     a = reportExecute(学号, True)
     # report = open("./report.txt", "r", encoding="utf-8").read().split("===")
     # print(len(report.pop(0)))
-
-
-
-

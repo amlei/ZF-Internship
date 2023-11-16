@@ -12,9 +12,9 @@ import logging
 import smtplib
 from email.mime.text import MIMEText
 from email.utils import formataddr
-from glo import glo
-from glo import log_info
-from glo import log_error
+from function.glo import glo
+from function.glo import log_info
+from function.glo import log_error
 
 
 class sendEmail():

@@ -7,17 +7,12 @@
 @version：python 3.12
 @IDE: PyCharm 2023.2
 """
-import logging
-import pprint
-import re
-
 import pymysql
 import datetime
-from glo import glo
-from glo import log_waring
-from glo import log_error
-from sendEmail import sendEmail
-from state import geocode
+from function.glo import glo
+from function.glo import log_waring
+from function.glo import log_error
+from function.state import geocode
 
 class SQL:
     def __init__(self):
@@ -32,10 +27,10 @@ class SQL:
         table: 仅提供state、user表
         **kwargs -> password: str = None, mail: str = None,
                     longitude: float = None, latitude: float = None, location: str = None
-                    
+
         user表所需: user, password, mail
         state表所需: user, longitude, latitude
-        
+
         例如：
         SQL.insert(table='user', password=123, mail=1234)
         SQL.insert(table='state', user=123, mbjd=110.01, mbwd=110.01, kqjd=110.01, kqwd=110.01, kqddxx='北京西四环')
@@ -47,11 +42,11 @@ class SQL:
         try:
             match table:
                 case 'state':
-                        self.cursor.execute(
-                            f"insert into state(yhm, mbjd, mbwd, kqjd, kqwd,kqddxx) "
-                            f"values ('{self.user}',{'{:.2f}'.format(kwargs['longitude'] - 0.75)},"
-                            f"{'{:.2f}'.format(kwargs['latitude'] + 0.65)},"
-                            f"'{kwargs['longitude']}','{kwargs['latitude']}','{kwargs['address']}')")
+                    self.cursor.execute(
+                        f"insert into state(yhm, mbjd, mbwd, kqjd, kqwd,kqddxx) "
+                        f"values ('{self.user}',{'{:.2f}'.format(kwargs['longitude'] - 0.75)},"
+                        f"{'{:.2f}'.format(kwargs['latitude'] + 0.65)},"
+                        f"'{kwargs['longitude']}','{kwargs['latitude']}','{kwargs['address']}')")
                 case 'user':
                     self.cursor.execute(
                         f"insert into user(yhm, mm, mail) values ('{self.user}',"
@@ -132,6 +127,7 @@ class SQL:
         self.cursor.execute(f"show columns from {table}")
 
         return list(self.cursor.fetchall()[1:])
+
 
 # 继承父类
 class reportSQL(SQL):
@@ -223,6 +219,7 @@ class reportSQL(SQL):
 
         return list(self.cursor.fetchall()[0])
 
+
 def main():
     """
     按键提示：
@@ -242,10 +239,12 @@ def main():
             sql.insert(table="user", password=data.pop(0), mail=data.pop(0))
         case glo.insert_state:
             location = geocode()
-            sql.insert(table="state", longitude=location['longitude'], latitude=location['latitude'], address=location['address'])
+            sql.insert(table="state", longitude=location['longitude'], latitude=location['latitude'],
+                       address=location['address'])
         case glo.update_data:
             # 更新数据
             pass
+
 
 if __name__ == '__main__':
     """
@@ -266,4 +265,3 @@ if __name__ == '__main__':
     # # a.insert(table="state", longitude=location['longitude'], latitude=location['latitude'], address=location['address'])
     #
     # a.update(table="state", longitude=location['longitude'], latitude=location['latitude'], address=location['address'])
-

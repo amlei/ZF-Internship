@@ -14,9 +14,7 @@ from time import sleep
 import random
 from chinese_calendar import is_holiday
 
-"""
-全局数据
-"""
+""" 全局数据 """
 class glo:
     login = "登录"
     sign = "打卡"
@@ -39,7 +37,6 @@ def today_is_weekend() -> bool:
         ret = True
 
     return ret
-
 
 def date_is_holiday(now_date: datetime) -> bool:
     ret: bool = False
@@ -81,4 +78,3 @@ if __name__ == '__main__':
     elif date_is_holiday(glo.today) is True and date_is_holiday(glo.today + datetime.timedelta(days=1)) is True:
         print("今明均为假期, 直接退出程序不发送邮件提醒")
         logging.info("今日是假期，停止打卡")
-
