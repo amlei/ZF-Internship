@@ -19,8 +19,10 @@ from sql import reportSQL
 class URL:
     loginURL = ""  # 登录地址
     signURL = ""  # 打卡地址
-    singStatusURL = ""  # 打卡信息地址
+    singPageUrl = ""  # 打卡页面地址
+    singInfoUrl = ""  # 打卡信息地址
     reportURL = ""  # 周报上传地址
+
 
     # 自行查看本机的头文件
     header = {

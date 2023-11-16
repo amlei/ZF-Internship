@@ -141,10 +141,10 @@ class app():
     def isSign(self) -> bool:
         # 查看打卡状态
         self_sleep(10, 20)
-        sign_post_status = self.session.post(URL.singStatusURL, headers=self.header)
-        soup: BeautifulSoup = BeautifulSoup(sign_post_status.text, 'html.parser').find('div', class_='sign-btn')
+        sign_post_status = self.session.post(URL.singInfoUrl, headers=self.header)
+
         # 已打卡为 True, 否则为 False
-        return "none" in soup['style']
+        return len(json.loads(sign_post_status.text)) != 0
 
 # 提供检索用户
 def userData() -> list:
