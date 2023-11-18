@@ -61,7 +61,7 @@ class app():
             try:
                 post = self.session.post(URL.signURL, headers=self.header, data=userExecute(self.user).data['state'])
                 self.header = post.request.headers
-                self.status(post, glo.login)
+                self.status(post, glo.sign)
 
                 return post
             except requests.exceptions.SSLError:
@@ -144,7 +144,7 @@ class app():
         sign_post_status = self.session.post(URL.singInfoUrl, headers=self.header)
 
         # 已打卡为 True, 否则为 False
-        return len(json.loads(sign_post_status.text)) != 0
+        return len(json.loads(sign_post_status.text)) != glo.null
 
 # 提供检索用户
 def userData() -> list:
