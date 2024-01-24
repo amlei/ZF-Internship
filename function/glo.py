@@ -11,7 +11,8 @@ import datetime
 import logging
 from datetime import date
 from time import sleep
-import random
+from random import choices
+from random import uniform
 from chinese_calendar import is_holiday
 
 """ 全局数据 """
@@ -27,6 +28,8 @@ class glo:
     insert_user = 1
     insert_state = 2
     update_data = 3
+    start_time: list = [100, 150, 200, 250, 300, 350, 400, 450]
+    end_time: list = [200, 300, 400, 500, 600, 700, 800, 900]
 
 # 如果是周末打卡则在考勤范围
 def today_is_weekend() -> bool:
@@ -64,17 +67,32 @@ def log_waring(context: str) -> None:
     print(context)
 
 def self_sleep(start: int, end: int, text: str = None) -> None:
-    dormancy: float = float("{:.2f}".format(random.uniform(start, end)))
+    dormancy: float = float("{:.2f}".format(uniform(start, end)))
     print(f"{text}, 休眠{dormancy}秒")
     sleep(dormancy)
 
+def random_time() -> list:
+    """ 随机选择时间 """
+    while True:
+        start_sleep = choices(glo.start_time)[0]
+        end_sleep = choices(glo.end_time)[0]
+        # 结束时间一定要比开始时间大
+        if start_sleep < end_sleep:
+            break
+    return [start_sleep, end_sleep]
 
 if __name__ == '__main__':
     # print(today_is_weekend())
     # 若今天为第一天假期  date_is_holiday(glo.Today - datetime.timedelta(days=1)) == False)
-    if date_is_holiday(glo.today) is True and date_is_holiday(glo.today - datetime.timedelta(days=1)) is False:
-        print("今日是假期，停止打卡")
-        logging.info("今日是假期，停止打卡")
-    elif date_is_holiday(glo.today) is True and date_is_holiday(glo.today + datetime.timedelta(days=1)) is True:
-        print("今明均为假期, 直接退出程序不发送邮件提醒")
-        logging.info("今日是假期，停止打卡")
+    # if date_is_holiday(glo.today) is True and date_is_holiday(glo.today - datetime.timedelta(days=1)) is False:
+    #     print("今日是假期，停止打卡")
+    #     logging.info("今日是假期，停止打卡")
+    # elif date_is_holiday(glo.today) is True and date_is_holiday(glo.today + datetime.timedelta(days=1)) is True:
+    #     print("今明均为假期, 直接退出程序不发送邮件提醒")
+    #     logging.info("今日是假期，停止打卡")
+
+    """ 测试随机选择 """
+    r = random_time()
+    s = r.pop(0)
+    e = r.pop(0)
+    print(s, e)

@@ -10,16 +10,19 @@
 import json
 import requests
 import logging
+
 from function.data import URL
 from function.glo import glo
 from function.glo import self_sleep
 from function.glo import today_is_weekend
-from function.log import Log
-from function.sql import SQL
-from function.data import reportExecute
 from function.glo import date_is_holiday
 from function.glo import log_info
 from function.glo import log_error
+from function.glo import random_time
+from function.log import Log
+from function.sql import SQL
+from function.data import reportExecute
+
 from function.data import userExecute
 from function.sendEmail import sendEmail
 from bs4 import BeautifulSoup
@@ -152,7 +155,14 @@ def userData() -> list:
 
 def main() -> None:
     user = userData()
+    # length: int = len(user)
+    # 第一个打卡用户同样需要休眠
+    rt = random_time()
 
+    self_sleep(rt.pop(0), rt.pop(0))
+
+    i: int = 0
+    # 指定之后的用户需要付费后才能打卡
     while user:
         appLaunch = app()
         pop_user = user.pop(0)
@@ -167,8 +177,11 @@ def main() -> None:
         # 打卡
         appLaunch.sign()
 
+        i += 1
+
         # 每个用户打卡完成后休眠
-        self_sleep(60, 120, f"{yhm} 打卡完成，开始下个用户")
+        rt = random_time()
+        self_sleep(rt.pop(0), rt.pop(0), f"{yhm} 打卡完成，开始下个用户")
 
 
 if __name__ == '__main__':
