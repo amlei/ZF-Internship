@@ -19,6 +19,7 @@ from chinese_calendar import is_holiday
 class glo:
     login = "登录"
     sign = "打卡"
+    sing_out = "签退"
     report = "周报"
     success = "成功"
     error = "失败"

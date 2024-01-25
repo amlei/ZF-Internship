@@ -22,10 +22,10 @@ from function.glo import random_time
 from function.log import Log
 from function.sql import SQL
 from function.data import reportExecute
-
 from function.data import userExecute
 from function.sendEmail import sendEmail
 from bs4 import BeautifulSoup
+from datetime import datetime
 
 Log("./").log()   # Path
 
@@ -71,6 +71,26 @@ class app():
                 log_error(f"{requests.exceptions.SSLError} SSL连接池异常，请关闭代理或使用Linux后运行")
                 exit()
 
+    # 签退
+    def sing_out(self):
+        # 若当前时间为 18 点后且未签退
+        if self.isSign() and 18 < datetime.now().hour:
+            try:
+                log_info(f"{self.user} 签退")
+                # 更改签退信息
+                userdata = userExecute(self.user).data['state']
+                userdata['kqlx'] = 1
+
+                # post = self.session.post(URL.signURL, headers=self.header, data=userExecute(self.user).data['state'])
+                post = self.session.post(URL.signURL, headers=self.header, data=userdata)
+                self.header = post.request.headers
+                self.status(post, glo.sing_out)
+
+                return post
+            except requests.exceptions.SSLError:
+                log_error(f"{requests.exceptions.SSLError} SSL连接池异常，请关闭代理或使用Linux后运行")
+                exit()
+
     # 周报
     def report(self) -> requests:
         # 随即休眠1至3分钟
@@ -100,16 +120,13 @@ class app():
                     # 如果当前打卡执行完毕, 且今日为星期六则上传周报
                     case True:
                         self.report()
-                    # # 非上传周报情况，直接刷新header
-                    # case False:
-                    #     self.refresh_header()
-                    #     self.refresh_session()
+
             # 周报上传成功后会再次进入status函数，从而执行到本行判断是否上传成功条件，
-            # 若上传成功则刷新header 以供下一个用户能够正常执行打卡
             elif text == glo.report and json.loads(request.text)['status'] == 'success':
                 log_info(f"{self.user} {request.status_code} {text}{glo.success}")
-                # self.refresh_header()
-                # self.refresh_session()
+
+            elif text == glo.sing_out and json.loads(request.text)['status'] == 'success':
+                log_info(f"{self.user} {request.status_code} {text}{glo.success}")
 
         # 应以网站打卡操作为优先，而非先判断是否为假期
         elif request.status_code != 200 and date_is_holiday(glo.today) is True:
@@ -176,13 +193,14 @@ def main() -> None:
         appLaunch.login()
         # 打卡
         appLaunch.sign()
+        # 签退
+        appLaunch.sing_out()
 
         i += 1
 
         # 每个用户打卡完成后休眠
         rt = random_time()
         self_sleep(rt.pop(0), rt.pop(0), f"{yhm} 打卡完成，开始下个用户")
-
 
 if __name__ == '__main__':
     main()
