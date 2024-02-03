@@ -169,7 +169,7 @@ def main() -> None:
     self_sleep(rt.pop(0), rt.pop(0))
 
     i: int = 0
-    # 指定之后的用户需要付费后才能打卡
+
     while user:
         launch = App()
         pop_user = user.pop()
@@ -190,8 +190,9 @@ def main() -> None:
             launch.sing_out()
 
         i += 1
-        if i >= 3:
-            break
+        # 指定之后的用户需要付费后才能打卡
+        # if i >= 3:
+        #     break
         # 每个用户打卡完成后休眠
         rt = random_time()
         self_sleep(rt.pop(0), rt.pop(0), f"{yhm} 打卡完成，开始下个用户")

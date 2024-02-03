@@ -10,24 +10,23 @@
 from function.sql import reportSQL
 from function.sql import SQL
 
-""" 全局日志，提供当次允许结果发送给拥有者 (可更改) """
+""" 全局日志，提供当次运行结果发送给拥有者 (可更改) """
 send_log: str = ""
 
 
 class URL:
     """ 网址、用户数据 """
-    loginURL = ""  # 登录地址
-    signURL = ""  # 打卡地址
-    singPageUrl = ""  # 打卡页面地址
-    singInfoUrl = ""  # 打卡信息地址
-    reportURL = ""  # 周报上传地址
-
+    loginURL = ""       # 登录地址
+    signURL = ""        # 打卡地址
+    singPageUrl = ""    # 打卡页面地址
+    singInfoUrl = ""    # 打卡信息地址
+    reportURL = ""      # 周报上传地址
 
     # 自行查看本机的头文件
     header = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36 Edg/116.0.0.0",
-        "Cookie": "JSESSIONID=598A5B294147291E7E361D1D1D99B2EB",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+        "User-Agent": "",
+        "Cookie": "",
+        "Accept": ""
     }
 
 
@@ -44,6 +43,7 @@ def userExecute(user: int):
 
     db.close()
     return db
+
 
 # 执行周报数据操作
 def reportExecute(user: int, option: bool = False):
@@ -67,6 +67,7 @@ def reportExecute(user: int, option: bool = False):
     reSQL.close()
 
     return reSQL
+
 
 if __name__ == '__main__':
     a = reportExecute(学号, True)

@@ -12,9 +12,10 @@ import pprint
 from typing import Any
 import requests
 
-""" 地理编码 """
+
 def geocode() -> dict[str, float | Any]:
     """
+    地理编码
     输入地址规则遵循：国家、省份、城市、区县、城镇、乡村、街道、门牌号码、屋邨、大厦，如：北京市朝阳区阜通东大街6号。
     """
     # address = map(str, input("请输入打卡地址:").split(" "))
@@ -25,8 +26,7 @@ def geocode() -> dict[str, float | Any]:
     if address != "":
         data = requests.get(geo_url)
         # 打卡经纬度
-        location = [float(i) for i in
-                    json.loads(data.text)['geocodes'][0]['location'].split(",")]
+        location = [float(i) for i in json.loads(data.text)['geocodes'][0]['location'].split(",")]
         # 打卡地址 只保留省与市以下地址
         sign_address = json.loads(data.text)['geocodes'][0]['formatted_address'].replace(f"{json.loads(data.text)['geocodes'][0]['province']}{json.loads(data.text)['geocodes'][0]['city']}", "")
 
