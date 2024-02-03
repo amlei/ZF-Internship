@@ -9,35 +9,39 @@
 """
 import datetime
 import logging
+import function.data
 from datetime import date
 from time import sleep
 from random import choices
 from random import uniform
 from chinese_calendar import is_holiday
 
-""" 全局数据 """
-class glo:
-    login = "登录"
-    sign = "打卡"
-    sing_out = "签退"
-    report = "周报"
-    success = "成功"
-    error = "失败"
-    festival = "假期"
-    today = date.today()
-    null = 0
-    insert_user = 1
-    insert_state = 2
-    update_data = 3
-    start_time: list = [100, 150, 200, 250, 300, 350, 400, 450]
-    end_time: list = [200, 300, 400, 500, 600, 700, 800, 900]
+
+class Glo:
+    """ 全局数据 (不可更改) """
+    login: str = "登录"
+    sign: str = "打卡"
+    sing_out: str = "签退"
+    report: str = "周报"
+    success: str = "成功"
+    error: str = "失败"
+    festival: str = "假期"
+    log: str = "日志"
+    today: datetime = date.today()
+    null: int = 0
+    insert_user: int = 1
+    insert_state: int = 2
+    update_data: int = 3
+    sing_out_time: int = 18
+    start_time: list[int] = [100, 150, 200, 250, 300, 350, 400, 450]
+    end_time: list[int] = [200, 300, 400, 500, 600, 700, 800, 900]
 
 # 如果是周末打卡则在考勤范围
 def today_is_weekend() -> bool:
     ret: bool = False
 
     # 仅支持星期六数据
-    if glo.today.isoweekday() == 6:
+    if Glo.today.isoweekday() == 6:
         ret = True
 
     return ret
@@ -53,18 +57,23 @@ def date_is_holiday(now_date: datetime) -> bool:
     return ret
 
 
+
 def log_info(context: str) -> None:
     logging.info(context)
+
+    function.data.send_log += f"{context}\n"
     print(context)
 
 
 def log_error(context: str) -> None:
     logging.error(context)
+    function.data.send_log += f"{context}\n"
     print(context)
 
 
 def log_waring(context: str) -> None:
     logging.warning(context)
+    # data.send_log += f"{context}\n"
     print(context)
 
 def self_sleep(start: int, end: int, text: str = None) -> None:
@@ -75,8 +84,8 @@ def self_sleep(start: int, end: int, text: str = None) -> None:
 def random_time() -> list:
     """ 随机选择时间 """
     while True:
-        start_sleep = choices(glo.start_time)[0]
-        end_sleep = choices(glo.end_time)[0]
+        start_sleep = choices(Glo.start_time)[0]
+        end_sleep = choices(Glo.end_time)[0]
         # 结束时间一定要比开始时间大
         if start_sleep < end_sleep:
             break

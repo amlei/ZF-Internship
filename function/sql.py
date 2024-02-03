@@ -9,7 +9,7 @@
 """
 import pymysql
 import datetime
-from function.glo import glo
+from function.glo import Glo
 from function.glo import log_waring
 from function.glo import log_error
 from function.state import geocode
@@ -182,7 +182,7 @@ class reportSQL(SQL):
 
     def updateData(self) -> dict:
         self.data = {}
-        datas = self.select(glo.today)
+        datas = self.select(Glo.today)
         propertys = self.show_property("report")
         """
         ['zrzlx', 'ywlyb', 'id1', 'sxwd', 'kcsxwd', 'zc_h_zj', 'yf_h_zj', 'sfbx', 'xh_id', 'zjId', 'ksrq',
@@ -234,14 +234,14 @@ def main():
 
     option: int = int(input(main.__doc__))
     match option:
-        case glo.insert_user:
+        case Glo.insert_user:
             data = str(input("输入密码邮箱(空格分割):")).split(" ")
             sql.insert(table="user", password=data.pop(0), mail=data.pop(0))
-        case glo.insert_state:
+        case Glo.insert_state:
             location = geocode()
             sql.insert(table="state", longitude=location['longitude'], latitude=location['latitude'],
                        address=location['address'])
-        case glo.update_data:
+        case Glo.update_data:
             # 更新数据
             pass
 

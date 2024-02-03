@@ -10,8 +10,12 @@
 from function.sql import reportSQL
 from function.sql import SQL
 
-""" 网址、用户数据 """
+""" 全局日志，提供当次允许结果发送给拥有者 (可更改) """
+send_log: str = ""
+
+
 class URL:
+    """ 网址、用户数据 """
     loginURL = ""  # 登录地址
     signURL = ""  # 打卡地址
     singPageUrl = ""  # 打卡页面地址
@@ -26,8 +30,11 @@ class URL:
         "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
     }
 
-# 执行用户数据操作
+
 def userExecute(user: int):
+    """
+    执行用户数据操作
+    """
     db = SQL()
     db.update_user(user)
     # 更新用户数据
@@ -41,6 +48,7 @@ def userExecute(user: int):
 # 执行周报数据操作
 def reportExecute(user: int, option: bool = False):
     """
+    执行周报数据操作
     option: 默认为False -> 不执行插入操作
     **kwargs: 提供账号已打卡到的系统周次、当前插入周报时的账号打卡周次
     """

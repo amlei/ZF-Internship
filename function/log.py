@@ -7,7 +7,7 @@
 @version：python 3.12
 @IDE: PyCharm 2023.2
 """
-from function.glo import glo
+from function.glo import Glo
 import os
 import logging
 
@@ -30,7 +30,7 @@ class Log:
         self.isExistsDir("log")
 
         # Aliyun Server
-        logging.basicConfig(filename=f'{self.path}log/{glo.today}.log', format='%(levelname)s :%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG)
+        logging.basicConfig(filename=f'{self.path}log/{Glo.today}.log', format='%(levelname)s :%(asctime)s %(message)s', encoding='utf-8', level=logging.DEBUG)
 
 if __name__ == '__main__':
     # PATH = "./"
